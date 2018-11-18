@@ -137,6 +137,9 @@
       },
       submitReply(){
         let that = this
+        let post = {
+          content :that.content
+        }
         that.$http.post('/api/WorkNotify/Reply',post).then(()=>{
           Toast('操作成功')
           console.log('操作成功');
