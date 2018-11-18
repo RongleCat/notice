@@ -1,0 +1,21 @@
+.page[fabu] {
+  .van-cell {
+    padding: 30px;
+  }
+
+  .van-cell__title {
+    font-size: 24px !important;
+  }
+}
+
+.van-cell-text {
+  font-size: 24px;
+}
+
+.van-cell {
+  padding: 20px 30px !important;
+}
+
+.add-container .van-cell__value {
+  @include clearfix;
+}

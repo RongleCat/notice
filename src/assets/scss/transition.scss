@@ -1,0 +1,101 @@
+//主界面tabber切换过渡样式
+.fade-left-enter-active,
+.fade-left-leave-active,
+.fade-right-enter-active,
+.fade-right-leave-active {
+  transition: all .4s;
+}
+
+.fade-left-enter {
+  transform: translateX(100%);
+  opacity: 1;
+}
+
+.fade-left-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.fade-right-enter {
+  transform: translateX(-100%);
+  opacity: 1;
+}
+
+.fade-right-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+//弹出页面切换样式
+.pop-left-enter-active,
+.pop-right-enter-active,
+.pop-top-enter-active,
+.pop-bottom-enter-active,
+.pop-left-leave-active,
+.pop-right-leave-active,
+.pop-top-leave-active,
+.pop-bottom-leave-active {
+  transition: transform .4s cubic-bezier(.39, .05, .09, .92)
+}
+
+.pop-left-enter,
+.pop-left-leave-to {
+  transform: translateX(100%);
+}
+
+.pop-right-enter,
+.pop-right-leave-to {
+  transform: translateX(-100%);
+}
+
+.pop-top-enter,
+.pop-top-leave-to {
+  transform: translateY(-100%);
+}
+
+.pop-bottom-enter,
+.pop-bottom-leave-to {
+  transform: translateY(100%);
+}
+
+.fade-in-enter-active,
+.fade-in-leave-active {
+  transition: all .2s;
+}
+
+.fade-in-enter,
+.fade-in-leave-to {
+  opacity: 0;
+}
+
+.scale-top-enter-active,
+.scale-top-leave-active {
+  transition: all .4s cubic-bezier(.39, .05, .09, .92)
+}
+
+.scale-top-enter,
+.scale-top-leave-to {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotation-flip {
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
+}
+
