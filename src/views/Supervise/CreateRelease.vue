@@ -1,57 +1,59 @@
 <template>
-  <div class="create-container">
-    <van-cell-group>
-      <van-cell value="标题" />
-      <van-field v-model="title" type="textarea" placeholder="请输入标题" rows="1" autosize />
-    </van-cell-group>
-    <van-cell-group>
-      <van-cell value="内容" />
-      <van-field v-model="content" type="textarea" placeholder="请输入内容" rows="1" autosize />
-    </van-cell-group>
-    <van-cell-group>
-      <van-cell value="附件" />
-      <van-cell class="file-container">
-        <div class="file-item" v-for="(i,index) in images" :key="index" @click="viewImage(i)">
-          <div class="main">
-            <i class="iconfont icon-cha" @click.stop="deleteImage(index)"></i>
-            <img :src="i">
+  <transition name="fade-in">
+    <div class="create-container" v-if="getJs">
+      <van-cell-group>
+        <van-cell value="标题" />
+        <van-field v-model="title" type="textarea" placeholder="请输入标题" rows="1" autosize />
+      </van-cell-group>
+      <van-cell-group>
+        <van-cell value="内容" />
+        <van-field v-model="content" type="textarea" placeholder="请输入内容" rows="1" autosize />
+      </van-cell-group>
+      <van-cell-group>
+        <van-cell value="附件" />
+        <van-cell class="file-container">
+          <div class="file-item" v-for="(i,index) in images" :key="index" @click="viewImage(i)">
+            <div class="main">
+              <i class="iconfont icon-cha" @click.stop="deleteImage(index)"></i>
+              <img :src="i">
+            </div>
           </div>
-        </div>
-        <div class="file-item add-file" @click="selectImage">
-          <div class="main">
-            <i class="iconfont icon-fujian"></i>
+          <div class="file-item add-file" @click="selectImage">
+            <div class="main">
+              <i class="iconfont icon-fujian"></i>
+            </div>
           </div>
-        </div>
-      </van-cell>
-    </van-cell-group>
-    <van-cell-group>
-      <van-cell title="开始时间" is-link :value="formatStart" @click="showStartTime = true" />
-      <van-cell title="结束时间" is-link :value="formatEnd" @click="showEndTime = true" />
-    </van-cell-group>
-    <van-cell-group>
-      <van-cell value="人员选择" />
-      <van-cell class="add-container">
-        <div class="add-item" v-for="(item,index) in selectUsers" :key="index">
-          <span @click="deleteMan(item.id,index)"><i class="iconfont icon-cha"></i></span>
-          <img :src="item.avatar||'/images/default_head.jpg'">
-          <div class="name">{{item.name}}</div>
-        </div>
-        <div class="add-item add-man">
-          <div class="main" @click="selectJoinMan"><i class="iconfont icon-jia"></i></div>
-        </div>
-      </van-cell>
-    </van-cell-group>
-    <div class="bottom-btn">
-      <van-button size="large" @click="submitCreate">提交</van-button>
+        </van-cell>
+      </van-cell-group>
+      <van-cell-group>
+        <van-cell title="开始时间" is-link :value="formatStart" @click="showStartTime = true" />
+        <van-cell title="结束时间" is-link :value="formatEnd" @click="showEndTime = true" />
+      </van-cell-group>
+      <van-cell-group>
+        <van-cell value="人员选择" />
+        <van-cell class="add-container">
+          <div class="add-item" v-for="(item,index) in selectUsers" :key="index">
+            <span @click="deleteMan(item.id,index)"><i class="iconfont icon-cha"></i></span>
+            <img :src="item.avatar||'https://fmcat-common-static.oss-cn-hangzhou.aliyuncs.com/images/default_head.jpg'">
+            <div class="name">{{item.name}}</div>
+          </div>
+          <div class="add-item add-man">
+            <div class="main" @click="selectJoinMan"><i class="iconfont icon-jia"></i></div>
+          </div>
+        </van-cell>
+      </van-cell-group>
+      <div class="bottom-btn">
+        <van-button size="large" @click="submitCreate">提交</van-button>
+      </div>
+      <van-popup v-model="showStartTime" position="bottom">
+        <van-datetime-picker v-model="startDate" type="datetime" :minDate="new Date()" :maxDate="startMax" @confirm="startConfirm"
+          @cancel="startCancel" />
+      </van-popup>
+      <van-popup v-model="showEndTime" position="bottom">
+        <van-datetime-picker v-model="endDate" type="datetime" :minDate="endMin" @confirm="endConfirm" @cancel="endCancel" />
+      </van-popup>
     </div>
-    <van-popup v-model="showStartTime" position="bottom">
-      <van-datetime-picker v-model="startDate" type="datetime" :minDate="new Date()" :maxDate="startMax" @confirm="startConfirm"
-        @cancel="startCancel" />
-    </van-popup>
-    <van-popup v-model="showEndTime" position="bottom">
-      <van-datetime-picker v-model="endDate" type="datetime" :minDate="endMin" @confirm="endConfirm" @cancel="endCancel" />
-    </van-popup>
-  </div>
+  </transition>
 </template>
 
 <script>
@@ -72,7 +74,8 @@
         endDone: false,
         selectUsers: [],
         selectUsersId: [],
-        images: []
+        images: [],
+        getJs: false
       };
     },
     computed: {
@@ -109,6 +112,34 @@
           return new Date();
         }
       }
+    },
+    mounted() {
+      let that = this
+      that.$http.get('/api/ticket/get', {
+        params: {
+          url: encodeURIComponent(window.location.href.split('#')[0])
+        }
+      }).then(r => {
+        if (r) {
+          window.wx.config({
+            beta: true, // 必须这么写，否则wx.invoke调用形式的jsapi会有问题
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: 'wwb380417e702d20f6', // 必填，企业微信的corpID
+            nonceStr: r.nonceStr,
+            signature: r.signature,
+            timestamp: r.timestamp,
+            jsApiList: ['selectEnterpriseContact', 'previewImage', 'uploadImage', 'chooseImage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+          });
+
+          window.wx.ready(function () {
+            that.getJs = true
+          })
+
+          window.wx.error(function (res) {
+            console.log(res);
+          });
+        }
+      })
     },
     methods: {
       startCancel() {

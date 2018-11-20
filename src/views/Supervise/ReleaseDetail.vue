@@ -41,7 +41,7 @@
       <van-cell class="man-list">
         <div class="no-data" v-if="!pageData.userAList.length">暂无已反馈人员</div>
         <div class="item" v-else v-for="(i,index) in pageData.userAList" :key="index" @click="goReplyDetail(i.id)">
-          <img :src="i.avatar||'/images/default_head.jpg'">
+          <img :src="i.avatar||'https://fmcat-common-static.oss-cn-hangzhou.aliyuncs.com/images/default_head.jpg'">
           <div class="name">{{i.name}}</div>
         </div>
       </van-cell>
@@ -56,7 +56,7 @@
       <van-cell class="man-list">
         <div class="no-data" v-if="!pageData.userBList.length">所有人员已反馈</div>
         <div class="item" v-for="(i,index) in pageData.userBList" :key="index">
-          <img :src="i.avatar||'/images/default_head.jpg'">
+          <img :src="i.avatar||'https://fmcat-common-static.oss-cn-hangzhou.aliyuncs.com/images/default_head.jpg'">
           <div class="name">{{i.name}}</div>
         </div>
       </van-cell>

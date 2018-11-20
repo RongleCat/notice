@@ -77,24 +77,69 @@
       id() {
         return this.$route.params.id
       },
+      type() {
+        return this.$route.query.type || false
+      },
       images() {
         if (this.pd) {
           return this.pd.attachment.split('|')
         } else {
           return []
         }
+      },
+      replyId(){
+        if (this.pd) {
+          return this.pd.replyId
+        }else{
+          return ''
+        }
       }
     },
     mounted() {
       let that = this
-      that.$http.get('/api/WorkNotify/ReplyDetail2', {
+
+      that.$http.get('/api/ticket/get', {
         params: {
-          id: that.id
+          url: encodeURIComponent(window.location.href.split('#')[0])
         }
       }).then(r => {
-        console.log(r);
-        that.pd = r
+        if (r) {
+          window.wx.config({
+            beta: true, // 必须这么写，否则wx.invoke调用形式的jsapi会有问题
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: 'wwb380417e702d20f6', // 必填，企业微信的corpID
+            nonceStr: r.nonceStr,
+            signature: r.signature,
+            timestamp: r.timestamp,
+            jsApiList: ['selectEnterpriseContact', 'previewImage', 'uploadImage', 'chooseImage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+          });
+
+          window.wx.ready(function () {
+            let url = '/api/WorkNotify/ReplyDetail2'
+
+            if (that.type) {
+              url = '/api/WorkNotify/ReplyDetail3'
+            }
+
+            that.$http.get(url, {
+              params: {
+                id: that.id
+              }
+            }).then(r => {
+              console.log(r);
+              that.pd = r
+              if (r.replystate === 1) {
+                that.$router.replace('/supervise/replydetail/' + r.replyId+'?type=notice')
+              }
+            })
+          })
+
+          window.wx.error(function (res) {
+            console.log(res);
+          });
+        }
       })
+
     },
     methods: {
       viewImage(url) {
@@ -148,6 +193,9 @@
           content: that.content,
           id: that.id,
           attachment: that.submitImages.join('|')
+        }
+        if (that.type) {
+          post.id = that.replyId
         }
         if (!post.content.length) {
           Toast.fail('反馈内容不能为空')

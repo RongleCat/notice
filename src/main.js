@@ -6,7 +6,7 @@ import VueAxios from 'vue-axios'
 import "./assets/util/vconsole";
 
 import Vant from 'vant';
-import 'vant/lib/index.css';
+import 'vant/lib/vant-css/index.css';
 
 import moment from "moment";
 
@@ -38,11 +38,20 @@ Vue.filter('fTime', function (value, format) {
 Vue.filter('getTime', function (value) {
   if (!value) return ''
   let len = value.length
-  return value.substring(6,len-2)
+  return value.substring(6, len - 2)
+})
+
+Vue.filter('defaultHead', function (value) {
+  if (!value) return 'https://fmcat-common-static.oss-cn-hangzhou.aliyuncs.com/images/default_head.jpg'
+  return value
 })
 
 if (/micromessenger/.test(navigator.userAgent.toLowerCase())) {
-  axios.get('/api/ticket/get').then(r => {
+  axios.get('/api/ticket/get', {
+    params: {
+      url: encodeURIComponent(window.location.href.split('#')[0])
+    }
+  }).then(r => {
     if (r) {
       wx.config({
         beta: true, // 必须这么写，否则wx.invoke调用形式的jsapi会有问题
