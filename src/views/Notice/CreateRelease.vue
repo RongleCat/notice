@@ -101,7 +101,7 @@
           defaultCameraMode: "batch", //表示进入拍照界面的默认模式，目前有normal与batch两种选择，normal表示普通单拍模式，batch表示连拍模式，不传该参数则为normal模式。（注：用户进入拍照界面仍然可自由切换两种模式）
           success: function (res) {
             // var localIds = res.localIds; // 返回选定照片的本地ID列表，
-            // console.log(res);
+            console.log(res);
             // andriod中localId可以作为img标签的src属性显示图片；
             // 而在IOS中需通过上面的接口getLocalImgData获取图片base64数据，从而用于img标签的显示
           }

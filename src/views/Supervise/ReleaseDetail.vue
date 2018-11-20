@@ -40,8 +40,8 @@
       </van-cell>
       <van-cell class="man-list">
         <div class="no-data" v-if="!pageData.userAList.length">暂无已反馈人员</div>
-        <div class="item" v-else v-for="(i,index) in pageData.userAList" :key="index" @click="$router.push(`/supervise/replydetail/${id}/${i.id}`)">
-          <img :src="i.avatar">
+        <div class="item" v-else v-for="(i,index) in pageData.userAList" :key="index" @click="goReplyDetail(i.id)">
+          <img :src="i.avatar||'/images/default_head.jpg'">
           <div class="name">{{i.name}}</div>
         </div>
       </van-cell>
@@ -56,7 +56,7 @@
       <van-cell class="man-list">
         <div class="no-data" v-if="!pageData.userBList.length">所有人员已反馈</div>
         <div class="item" v-for="(i,index) in pageData.userBList" :key="index">
-          <img :src="i.avatar">
+          <img :src="i.avatar||'/images/default_head.jpg'">
           <div class="name">{{i.name}}</div>
         </div>
       </van-cell>
@@ -125,7 +125,7 @@
           urls: that.images // 需要预览的图片http链接列表
         });
       },
-      closeWork() { 
+      closeWork() {
         let that = this
         that.$http.post('/api/WorkNotify/Close', {
           id: that.id
@@ -135,6 +135,9 @@
             that.$router.replace('/supervise/myrelease')
           }, 2000);
         })
+      },
+      goReplyDetail(userid) {
+        this.$router.push(`/supervise/replydetail/0?userid=${userid}&notifyid=${this.id}`)
       }
     }
   }

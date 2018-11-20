@@ -6,7 +6,7 @@ import VueAxios from 'vue-axios'
 import "./assets/util/vconsole";
 
 import Vant from 'vant';
-import 'vant/lib/vant-css/index.css';
+import 'vant/lib/index.css';
 
 import moment from "moment";
 

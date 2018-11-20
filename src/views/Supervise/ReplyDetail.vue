@@ -44,6 +44,46 @@
   export default {
     beforeCreate() {
       document.title = '反馈详情'
+      console.log(this.$route);
+    },
+    data() {
+      return {
+        pd: null
+      }
+    },
+    computed: {
+      Id() {
+        return this.$route.params.id
+      },
+      userId() {
+        return this.$route.query.userid || false
+      },
+      notifyId() {
+        return this.$route.query.notifyid || false
+      }
+    },
+    mounted() {
+      let that = this
+      let params = {}
+      let url = '/api/WorkNotify/ReplyDetail2'
+      if (that.userId && that.notifyId) {
+        params.userId = that.userId
+        params.notifyId = that.notifyId
+        url = '/api/WorkNotify/ReplyDetail'
+      } else {
+        params.Id = that.Id
+      }
+      
+      that.$http.get(url, {
+        params
+      }).then(r => {
+        console.log(r)
+        if (r) {
+          that.pd = r
+        }
+      }).catch(err => {
+        console.error(err)
+      })
     }
   }
 </script>

@@ -36,9 +36,9 @@
       <van-field v-model="content" type="textarea" placeholder="请输入反馈内容" rows="1" autosize />
     </van-cell-group>
     <van-cell-group>
-      <van-cell value="附件" />
+      <van-cell value="提交附件" />
       <van-cell class="submitfile-container">
-        <div class="file-item" v-for="(i,index) in submitImages" :key="index" @click="viewImage(i)">
+        <div class="file-item" v-for="(i,index) in submitImages" :key="index" @click="viewImageSubmit(i)">
           <div class="main">
             <i class="iconfont icon-cha" @click.stop="submitImages.splice(index, 1)"></i>
             <img :src="i">
@@ -53,7 +53,7 @@
     </van-cell-group>
 
     <div class="bottom-btn">
-      <van-button size="large" @click="$router.replace('/supervise/myreply')">提交</van-button>
+      <van-button size="large" @click="submitReply">提交</van-button>
     </div>
   </div>
 </template>
@@ -101,6 +101,13 @@
         let that = this
         window.wx.previewImage({
           current: url, // 当前显示图片的http链接
+          urls: that.images // 需要预览的图片http链接列表
+        });
+      },
+      viewImageSubmit(url) {
+        let that = this
+        window.wx.previewImage({
+          current: url, // 当前显示图片的http链接
           urls: that.submitImages // 需要预览的图片http链接列表
         });
       },
@@ -135,14 +142,22 @@
           }
         });
       },
-      submitReply(){
+      submitReply() {
         let that = this
         let post = {
-          content :that.content
+          content: that.content,
+          id: that.id,
+          attachment: that.submitImages.join('|')
         }
-        that.$http.post('/api/WorkNotify/Reply',post).then(()=>{
+        if (!post.content.length) {
+          Toast.fail('反馈内容不能为空')
+          return false
+        }
+        that.$http.post('/api/WorkNotify/Reply', post).then(() => {
           Toast('操作成功')
-          console.log('操作成功');
+          setTimeout(() => {
+            that.$router.replace('/supervise/myreply')
+          }, 2000);
         })
       }
     }

@@ -33,7 +33,7 @@
       <van-cell class="add-container">
         <div class="add-item" v-for="(item,index) in selectUsers" :key="index">
           <span @click="deleteMan(item.id,index)"><i class="iconfont icon-cha"></i></span>
-          <img :src="item.avatar">
+          <img :src="item.avatar||'/images/default_head.jpg'">
           <div class="name">{{item.name}}</div>
         </div>
         <div class="add-item add-man">
