@@ -115,7 +115,8 @@
     },
     mounted() {
       let that = this
-      that.$http.get('/api/ticket/get', {
+      // that.getJs = true
+      that.$http.get('/api/worknotify/ticket', {
         params: {
           url: encodeURIComponent(window.location.href.split('#')[0])
         }
@@ -281,6 +282,7 @@
     },
     beforeCreate() {
       document.title = "发布督办";
+      this.getJs = true
     }
   };
 </script>

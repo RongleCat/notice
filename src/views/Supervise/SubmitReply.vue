@@ -87,10 +87,10 @@
           return []
         }
       },
-      replyId(){
+      replyId() {
         if (this.pd) {
           return this.pd.replyId
-        }else{
+        } else {
           return ''
         }
       }
@@ -98,7 +98,7 @@
     mounted() {
       let that = this
 
-      that.$http.get('/api/ticket/get', {
+      that.$http.get('/api/worknotify/ticket', {
         params: {
           url: encodeURIComponent(window.location.href.split('#')[0])
         }
@@ -129,7 +129,7 @@
               console.log(r);
               that.pd = r
               if (r.replystate === 1) {
-                that.$router.replace('/supervise/replydetail/' + r.replyId+'?type=notice')
+                that.$router.replace('/supervise/replydetail/' + r.replyId + '?type=notice')
               }
             })
           })
