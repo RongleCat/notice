@@ -172,7 +172,7 @@
                 var serverId = res.serverId; // 返回图片的服务器端ID
                 console.log(serverId);
                 Toast.loading('正在获取图片')
-                that.$http.get("/api/file/upload?media=" + serverId).then(r => {
+                that.$http.get("/api/meeting/upload?media=" + serverId).then(r => {
                   that.images.push('http://wibgchina.cnvp.com.cn' + r.replace('\\', '/'))
                   Toast.clear()
                 });

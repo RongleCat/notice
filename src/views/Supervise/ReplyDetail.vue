@@ -1,70 +1,72 @@
 <template>
-  <div class="replydetail">
-    <van-cell-group>
-      <van-cell class="head-block">
-        <template slot="title">
-          <img :src="pd.user.avatar|defaultHead">
-          {{pd.user.name}}
-          <div class="state-label">{{pd.replystate?'已反馈':'未反馈'}}</div>
-        </template>
-      </van-cell>
-    </van-cell-group>
-    <van-cell-group>
-      <van-cell value="标题" class="bg-f4" />
-      <van-cell>
-        {{pd.title}}
-      </van-cell>
-    </van-cell-group>
-    <van-cell-group>
-      <van-cell value="内容" class="bg-f4" />
-      <van-cell>
-        {{pd.content}}
-      </van-cell>
-    </van-cell-group>
-    <van-cell-group v-if="images.length">
-      <van-cell class="bg-f4">
-        <template slot="title">
-          附件
-          <div class="text-tip">点击查看大图</div>
-        </template>
-      </van-cell>
-      <van-cell class="file-container">
-        <div class="file-item" v-for="(i,index) in images" :key="index" @click="viewImage(i)">
-          <div class="main">
-            <img :src="i">
+  <transition name="fade-in">
+    <div class="replydetail" v-if="getJs">
+      <van-cell-group>
+        <van-cell class="head-block">
+          <template slot="title">
+            <img :src="pd.user.avatar|defaultHead">
+            {{pd.user.name}}
+            <div class="state-label">{{pd.replystate?'已反馈':'未反馈'}}</div>
+          </template>
+        </van-cell>
+      </van-cell-group>
+      <van-cell-group>
+        <van-cell value="标题" class="bg-f4" />
+        <van-cell>
+          {{pd.title}}
+        </van-cell>
+      </van-cell-group>
+      <van-cell-group>
+        <van-cell value="内容" class="bg-f4" />
+        <van-cell>
+          {{pd.content}}
+        </van-cell>
+      </van-cell-group>
+      <van-cell-group v-if="images.length">
+        <van-cell class="bg-f4">
+          <template slot="title">
+            附件
+            <div class="text-tip">点击查看大图</div>
+          </template>
+        </van-cell>
+        <van-cell class="file-container">
+          <div class="file-item" v-for="(i,index) in images" :key="index" @click="viewImage(i)">
+            <div class="main">
+              <img :src="i">
+            </div>
           </div>
-        </div>
-      </van-cell>
-    </van-cell-group>
-    <van-cell-group>
-      <van-cell value="时间" class="bg-f4" />
-      <van-cell :value="`${formatTime(pd.startTime)} 至 ${formatTime(pd.endTime)}`" />
-    </van-cell-group>
-    <van-cell-group>
-      <van-cell value="反馈内容" class="bg-f4" />
-      <van-cell>
-        {{pd.reply}}
-      </van-cell>
-    </van-cell-group>
-    <van-cell-group v-if="replyImages.length">
-      <van-cell class="bg-f4">
-        <template slot="title">
-          反馈附件
-          <div class="text-tip">点击查看大图</div>
-        </template>
-      </van-cell>
-      <van-cell class="file-container">
-        <div class="file-item" v-for="(i,index) in replyImages" :key="index" @click="viewImageSubmit(i)">
-          <div class="main">
-            <img :src="i">
+        </van-cell>
+      </van-cell-group>
+      <van-cell-group>
+        <van-cell value="时间" class="bg-f4" />
+        <van-cell :value="`${formatTime(pd.startTime)} 至 ${formatTime(pd.endTime)}`" />
+      </van-cell-group>
+      <van-cell-group>
+        <van-cell value="反馈内容" class="bg-f4" />
+        <van-cell>
+          {{pd.reply}}
+        </van-cell>
+      </van-cell-group>
+      <van-cell-group v-if="replyImages.length">
+        <van-cell class="bg-f4">
+          <template slot="title">
+            反馈附件
+            <div class="text-tip">点击查看大图</div>
+          </template>
+        </van-cell>
+        <van-cell class="file-container">
+          <div class="file-item" v-for="(i,index) in replyImages" :key="index" @click="viewImageSubmit(i)">
+            <div class="main">
+              <img :src="i">
+            </div>
           </div>
-        </div>
-      </van-cell>
-    </van-cell-group>
-    <div class="bottom-btn">
-      <van-button size="large" @click="backEvent">返回</van-button>
+        </van-cell>
+      </van-cell-group>
+      <div class="bottom-btn">
+        <van-button size="large" @click="backEvent">返回</van-button>
+      </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
@@ -76,7 +78,8 @@
     },
     data() {
       return {
-        pd: null
+        pd: null,
+        getJs: false
       }
     },
     computed: {
@@ -116,18 +119,43 @@
         params.Id = that.Id
       }
 
-      that.$http.get(url, {
-        params
-      }).then(r => {
-        console.log(r)
-        if (r) {
-          that.pd = r
+      that.$http.get('/api/worknotify/ticket', {
+        params: {
+          url: encodeURIComponent(window.location.href.split('#')[0])
         }
-      }).catch(err => {
-        console.error(err)
-      })
-    },
+      }).then(r => {
+        if (r) {
+          window.wx.config({
+            beta: true, // 必须这么写，否则wx.invoke调用形式的jsapi会有问题
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            appId: 'wwb380417e702d20f6', // 必填，企业微信的corpID
+            nonceStr: r.nonceStr,
+            signature: r.signature,
+            timestamp: r.timestamp,
+            jsApiList: ['selectEnterpriseContact', 'previewImage', 'uploadImage', 'chooseImage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+          });
 
+          window.wx.ready(function () {
+            that.$http.get(url, {
+              params
+            }).then(r => {
+              console.log(r)
+              if (r) {
+                that.pd = r
+                that.getJs = true
+              }
+            }).catch(err => {
+              console.error(err)
+            })
+          })
+
+          window.wx.error(function (res) {
+            console.log(res);
+          });
+        }
+      })
+
+    },
     methods: {
       viewImage(url) {
         let that = this

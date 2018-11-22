@@ -19,3 +19,7 @@
 .add-container .van-cell__value {
   @include clearfix;
 }
+
+.van-list {
+  min-height: 100%;
+}

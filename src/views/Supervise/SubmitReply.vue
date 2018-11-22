@@ -1,61 +1,63 @@
 <template>
-  <div class="submit-container">
-    <van-cell-group>
-      <van-cell value="标题" />
-      <van-cell>
-        {{pd.title}}
-      </van-cell>
-    </van-cell-group>
-    <van-cell-group>
-      <van-cell value="内容" />
-      <van-cell>
-        {{pd.content}}
-      </van-cell>
-    </van-cell-group>
-    <van-cell-group>
-      <van-cell>
-        <template slot="title">
-          附件
-          <div class="text-tip">点击查看大图</div>
-        </template>
-      </van-cell>
-      <van-cell class="file-container">
-        <div class="file-item" v-for="(i,index) in images" :key="index" @click="viewImage(i)">
-          <div class="main">
-            <img :src="i">
+  <transition name="fade-in">
+    <div class="submit-container" v-if="getJs">
+      <van-cell-group>
+        <van-cell value="标题" />
+        <van-cell>
+          {{pd.title}}
+        </van-cell>
+      </van-cell-group>
+      <van-cell-group>
+        <van-cell value="内容" />
+        <van-cell>
+          {{pd.content}}
+        </van-cell>
+      </van-cell-group>
+      <van-cell-group v-if="images.length">
+        <van-cell>
+          <template slot="title">
+            附件
+            <div class="text-tip">点击查看大图</div>
+          </template>
+        </van-cell>
+        <van-cell class="file-container">
+          <div class="file-item" v-for="(i,index) in images" :key="index" @click="viewImage(i)">
+            <div class="main">
+              <img :src="i">
+            </div>
           </div>
-        </div>
-      </van-cell>
-    </van-cell-group>
-    <van-cell-group>
-      <van-cell title="开始时间" :value="pd.startTime|getTime|fTime('YYYY-MM-DD HH:mm')" />
-      <van-cell title="结束时间" :value="pd.endTime|getTime|fTime('YYYY-MM-DD HH:mm')" />
-    </van-cell-group>
-    <van-cell-group>
-      <van-cell value="反馈内容" />
-      <van-field v-model="content" type="textarea" placeholder="请输入反馈内容" rows="1" autosize />
-    </van-cell-group>
-    <van-cell-group>
-      <van-cell value="提交附件" />
-      <van-cell class="submitfile-container">
-        <div class="file-item" v-for="(i,index) in submitImages" :key="index" @click="viewImageSubmit(i)">
-          <div class="main">
-            <i class="iconfont icon-cha" @click.stop="submitImages.splice(index, 1)"></i>
-            <img :src="i">
+        </van-cell>
+      </van-cell-group>
+      <van-cell-group>
+        <van-cell title="开始时间" :value="pd.startTime|getTime|fTime('YYYY-MM-DD HH:mm')" />
+        <van-cell title="结束时间" :value="pd.endTime|getTime|fTime('YYYY-MM-DD HH:mm')" />
+      </van-cell-group>
+      <van-cell-group>
+        <van-cell value="反馈内容" />
+        <van-field v-model="content" type="textarea" placeholder="请输入反馈内容" rows="1" autosize />
+      </van-cell-group>
+      <van-cell-group>
+        <van-cell value="提交附件" />
+        <van-cell class="submitfile-container">
+          <div class="file-item" v-for="(i,index) in submitImages" :key="index" @click="viewImageSubmit(i)">
+            <div class="main">
+              <i class="iconfont icon-cha" @click.stop="submitImages.splice(index, 1)"></i>
+              <img :src="i">
+            </div>
           </div>
-        </div>
-        <div class="file-item add-file" @click="selectImage">
-          <div class="main">
-            <i class="iconfont icon-fujian"></i>
+          <div class="file-item add-file" @click="selectImage">
+            <div class="main">
+              <i class="iconfont icon-fujian"></i>
+            </div>
           </div>
-        </div>
-      </van-cell>
-    </van-cell-group>
+        </van-cell>
+      </van-cell-group>
 
-    <div class="bottom-btn">
-      <van-button size="large" @click="submitReply">提交</van-button>
+      <div class="bottom-btn">
+        <van-button size="large" @click="submitReply">提交</van-button>
+      </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
@@ -67,7 +69,8 @@
       return {
         content: '',
         pd: null,
-        submitImages: []
+        submitImages: [],
+        getJs: false
       }
     },
     beforeCreate() {
@@ -81,7 +84,7 @@
         return this.$route.query.type || false
       },
       images() {
-        if (this.pd) {
+        if (this.pd && this.pd.attachment) {
           return this.pd.attachment.split('|')
         } else {
           return []
@@ -131,6 +134,8 @@
               if (r.replystate === 1) {
                 that.$router.replace('/supervise/replydetail/' + r.replyId + '?type=notice')
               }
+
+              that.getJs = true
             })
           })
 
@@ -175,7 +180,7 @@
                 var serverId = res.serverId; // 返回图片的服务器端ID
                 console.log(serverId);
                 Toast.loading('正在获取图片')
-                that.$http.get("/api/file/upload?media=" + serverId).then(r => {
+                that.$http.get("/api/worknotify/upload?media=" + serverId).then(r => {
                   that.submitImages.push('http://wibgchina.cnvp.com.cn' + r.replace('\\', '/'))
                   Toast.clear()
                 });

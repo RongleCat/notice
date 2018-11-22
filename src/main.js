@@ -15,10 +15,22 @@ Vue.use(Vant);
 Vue.use(VueAxios, axios)
 Vue.config.productionTip = false
 
+
+
 axios.interceptors.response.use(function (res) {
   // 对响应数据做点什么
   // removePending(res.config);
   if (res.data.IsSuccess) {
+    if (res.data.Code === 401) {
+      let url = encodeURIComponent(window.location.href.split('#')[1])
+      let appid = '1000015'
+      let api = 'worknotify'
+      if (/notice/.test(url)) {
+        appid = '1000016'
+        api = 'meeting'
+      }
+      window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wwb380417e702d20f6&redirect_uri=http%3a%2f%2fwibgchina.cnvp.com.cn%2fapi%2f${api}%2flogin&response_type=code&scope=snsapi_userinfo&agentid=${appid}&state=${url}#wechat_redirect`
+    }
     return res.data.Data
   } else {
     console.log(res.data.Message);

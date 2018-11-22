@@ -1,7 +1,7 @@
 <template>
   <div class="page" fabu>
     <van-list v-model="loading" :finished="finished" @load="onLoad">
-      <div class="item" @click="$router.push('/supervise/releasedetail/'+i.Id)" v-for="(i,index) in list" :key="index">
+      <div class="item" @click="$router.push('/supervise/releasedetail/'+i.Id+'?state='+i.State)" v-for="(i,index) in list" :key="index">
         <van-panel :title="i.Title">
           <div class="item-content">
             {{i.StartTime | getTime | fTime('YYYY-MM-DD HH:mm')}} 至 {{i.EndTime | getTime | fTime('YYYY-MM-DD HH:mm')}}
@@ -19,7 +19,7 @@
       return {
         page: 0,
         loading: false,
-        finished: false,
+        finished: true,
         list: [],
         listCount: 0
       }
@@ -30,7 +30,6 @@
     mounted() {
       let that = this
       that.getListData()
-
     },
     methods: {
       onLoad() {
@@ -50,6 +49,9 @@
             that.listCount = r.total
             that.list = [...that.list, ...r.data]
             that.loading = false;
+            if (that.page === 0) {
+              that.finished = false
+            }
             if (that.list.length >= that.listCount) {
               that.finished = true;
             }
