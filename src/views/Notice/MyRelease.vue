@@ -1,10 +1,11 @@
 <template>
   <div class="page" fabu>
     <van-list v-model="loading" :finished="finished" @load="onLoad">
-      <div class="item" @click="$router.push('/notice/releasedetail/'+i.Id+'?state='+i.state)" v-for="(i,index) in list" :key="index">
+      <div class="item" @click="$router.push('/notice/releasedetail/'+i.Id+'?state='+i.state)" v-for="(i,index) in list"
+        :key="index">
         <van-panel :title="i.title">
           <div class="item-content">
-            会议时间：{{i.time | getTime | fTime('YYYY-MM-DD HH:mm')}}
+            {{i.startTime | getTime | fTime('YYYY-MM-DD HH:mm')}} 至 {{i.endTime | getTime | fTime('YYYY-MM-DD HH:mm')}}
             <div class="state-label" :class="[stateItem(i.state).className]">{{stateItem(i.state).text}}</div>
           </div>
         </van-panel>
@@ -25,7 +26,7 @@
       }
     },
     beforeCreate() {
-      document.title = '我的发布'
+      document.title = '我发布的会议'
     },
     mounted() {
       let that = this

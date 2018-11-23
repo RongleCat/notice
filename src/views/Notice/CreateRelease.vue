@@ -2,11 +2,11 @@
   <transition name="fade-in">
     <div class="create-container" v-if="getJs">
       <van-cell-group>
-        <van-cell value="标题" />
+        <van-cell value="会议标题" />
         <van-field v-model="title" type="textarea" placeholder="请输入标题" rows="1" autosize />
       </van-cell-group>
       <van-cell-group>
-        <van-cell value="内容" />
+        <van-cell value="会议内容" />
         <van-field v-model="content" type="textarea" placeholder="请输入内容" rows="1" autosize />
       </van-cell-group>
       <van-cell-group>
@@ -27,6 +27,7 @@
       </van-cell-group>
       <van-cell-group>
         <van-cell title="开始时间" is-link :value="formatStart" @click="showStartTime = true" />
+        <van-cell title="结束时间" is-link :value="formatEnd" @click="showEndTime = true" />
       </van-cell-group>
       <van-cell-group>
         <van-cell value="人员选择" />
@@ -48,6 +49,9 @@
         <van-datetime-picker v-model="startDate" type="datetime" :minDate="new Date()" :maxDate="startMax" @confirm="startConfirm"
           @cancel="startCancel" />
       </van-popup>
+      <van-popup v-model="showEndTime" position="bottom">
+        <van-datetime-picker v-model="endDate" type="datetime" :minDate="endMin" @confirm="endConfirm" @cancel="endCancel" />
+      </van-popup>
     </div>
   </transition>
 </template>
@@ -65,6 +69,9 @@
         showStartTime: false,
         startDate: null,
         startDone: false,
+        showEndTime: false,
+        endDate: null,
+        endDone: false,
         selectUsers: [],
         selectUsersId: [],
         images: [],
@@ -75,6 +82,13 @@
       formatStart() {
         if (this.startDone) {
           return moment(this.startDate).format("YYYY-MM-DD HH:mm");
+        } else {
+          return "请选择";
+        }
+      },
+      formatEnd() {
+        if (this.endDone) {
+          return moment(this.endDate).format("YYYY-MM-DD HH:mm");
         } else {
           return "请选择";
         }
@@ -91,6 +105,13 @@
             .toDate();
         }
       },
+      endMin() {
+        if (this.startDone) {
+          return this.startDate;
+        } else {
+          return new Date();
+        }
+      }
     },
     mounted() {
       let that = this
@@ -130,6 +151,16 @@
         this.startDone = true;
         this.showStartTime = false;
         this.startDate = value;
+      },
+      endCancel() {
+        this.endDate = null;
+        this.endDone = false;
+        this.showEndTime = false;
+      },
+      endConfirm(value) {
+        this.endDone = true;
+        this.showEndTime = false;
+        this.endDate = value;
       },
       //选择参与人员
       selectJoinMan() {
@@ -212,13 +243,18 @@
           Toast.fail("请选择本次会议开始时间！");
           return false;
         }
+        if (!that.endDone) {
+          Toast.fail("请选择本次会议结束时间！");
+          return false;
+        }
         if (!that.selectUsersId.length) {
-          Toast.fail("请选择参与督办的人员！");
+          Toast.fail("请选择参与会议的人员！");
           return false;
         }
 
         let post = {
-          time: moment(that.startDate).format("YYYY-MM-DD HH:mm:ss"),
+          startTime: moment(that.startDate).format("YYYY-MM-DD HH:mm:ss"),
+          endTime: moment(that.endDate).format("YYYY-MM-DD HH:mm:ss"),
           title: that.title,
           content: that.content,
           userList: that.selectUsers,

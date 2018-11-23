@@ -2,17 +2,15 @@
   <transition name="fade-in">
     <div class="release-container" v-if="getJs">
       <van-cell-group :class="[state?'title':'']">
-        <van-cell value="标题" />
+        <van-cell value="会议标题" />
         <van-cell>
-          国贸集团举办海关政策解读及通关规范讲座
+          {{pageData.title}}
         </van-cell>
       </van-cell-group>
       <van-cell-group>
-        <van-cell value="内容" />
+        <van-cell value="会议内容" />
         <van-cell>
-          7月6日下午，国贸集团所属国际经济党支部联合
-          温州海关各党支部、农行城东支行党委，共同举
-          办海关政策解读及通关规范讲座。
+          {{pageData.content}}
         </van-cell>
       </van-cell-group>
       <van-cell-group v-if="images.length">
@@ -31,7 +29,8 @@
         </van-cell>
       </van-cell-group>
       <van-cell-group>
-        <van-cell title="会议时间" value="2018-11-04 12:00" />
+        <van-cell title="开始时间" :value="pageData.startTime|getTime|fTime('YYYY-MM-DD HH:mm')" />
+        <van-cell title="结束时间" :value="pageData.endTime|getTime|fTime('YYYY-MM-DD HH:mm')" />
       </van-cell-group>
       <van-cell-group>
         <van-cell>
@@ -47,11 +46,6 @@
           </div>
         </van-cell>
       </van-cell-group>
-
-      <van-cell-group v-if="!state">
-        <van-cell title="会议签到二维码" isLink value="查看二维码" @click="showQR = true" />
-      </van-cell-group>
-
       <van-cell-group>
         <van-cell>
           <template slot="title">
@@ -67,16 +61,21 @@
           </div>
         </van-cell>
       </van-cell-group>
+
+      <van-cell-group v-if="!state && !type">
+        <van-cell title="会议签到二维码" isLink value="查看二维码" @click="showQR = true" />
+      </van-cell-group>
+
       <div class="bottom-btn">
-        <van-button size="large" @click="$router.go(-1)" v-if="state">返回</van-button>
-        <van-button size="large" v-else>关闭会议</van-button>
+        <van-button size="large" @click="$router.go(-1)" v-if="state || type">返回</van-button>
+        <van-button size="large" v-else @click="closeMeeting">关闭会议</van-button>
       </div>
 
       <van-popup v-model="showQR">
         <div class="qr-pop">
           <h3>会议签到二维码</h3>
           <p>请保存二维码，用于会议签到</p>
-          <img :src="pageData.QCode">
+          <img :src="'data:image/png;base64,'+pageData.QCode">
           <p>↑长按保存二维码</p>
         </div>
       </van-popup>
@@ -136,6 +135,9 @@
       state() {
         return parseInt(this.$route.query.state)
       },
+      type() {
+        return parseInt(this.$route.query.type)
+      },
       images() {
         if (this.pageData) {
           return this.pageData.attachment.split('|')
@@ -152,7 +154,7 @@
           urls: that.images // 需要预览的图片http链接列表
         });
       },
-      closeWork() {
+      closeMeeting() {
         let that = this
         that.$http.post('/api/Meeting/Close', {
           id: that.id
@@ -165,7 +167,7 @@
       }
     },
     beforeCreate() {
-      document.title = '督办详情'
+      document.title = '会议详情'
     }
   }
 </script>
@@ -201,15 +203,26 @@
 
       .file-item {
         width: 20%;
-        padding: 0 20px;
         float: left;
-        padding-bottom: 20px;
+        border-radius: 5px;
+        padding: 10px;
+
+        .main {
+          width: 100%;
+          padding-top: 100%;
+          @include tapMask;
+          overflow: hidden;
+        }
 
         img {
           display: block;
           width: 100%;
           height: 100%;
           border-radius: 15px;
+          position: absolute;
+          top: 0;
+          left: 0;
+          object-fit: cover;
         }
       }
     }
