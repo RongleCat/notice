@@ -70,7 +70,8 @@
         content: '',
         pd: null,
         submitImages: [],
-        getJs: false
+        getJs: false,
+        submitDone: false
       }
     },
     beforeCreate() {
@@ -206,8 +207,18 @@
           Toast.fail('反馈内容不能为空')
           return false
         }
+        if (that.submitDone) {
+          return false
+        }
+
+        Toast.loading({
+          mask: true,
+          message: '加载中...'
+        });
+
         that.$http.post('/api/WorkNotify/Reply', post).then(() => {
-          Toast('操作成功')
+          that.submitDone = true
+          Toast.success('提交成功')
           setTimeout(() => {
             that.$router.replace('/supervise/myreply')
           }, 2000);

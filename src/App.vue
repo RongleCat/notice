@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <transition name="pop-bottom">
+    <!-- <transition name="pop-bottom">
       <TheTabber class="com-tabber" v-if="showTabber"></TheTabber>
-    </transition>
+    </transition> -->
     <transition :name="direction">
       <router-view class="view-main" />
     </transition>
@@ -10,7 +10,7 @@
 </template>
 
 <script>
-  import TheTabber from "@/components/TheTabber.vue";
+  // import TheTabber from "@/components/TheTabber.vue";
   let allRouter = [
     "noticeReplyDetail",
     "noticeReleaseDetail",
@@ -27,9 +27,9 @@
   ];
   export default {
     name: "app",
-    components: {
-      TheTabber
-    },
+    // components: {
+    //   TheTabber
+    // },
     data() {
       return {
         direction: "",
@@ -43,17 +43,21 @@
     },
     watch: {
       $route: function (to, form) {
-        if (to.name == 'signHome' || to.name == 'noticeHome') {
-          this.showTabber = true
-        } else {
-          this.showTabber = false
-        }
+        // if (to.name == 'signHome' || to.name == 'noticeHome') {
+        //   this.showTabber = true
+        // } else {
+        //   this.showTabber = false
+        // }
         let _before = allRouter.indexOf(to.name),
           _after = allRouter.indexOf(form.name);
         if (_before < _after) {
           this.direction = "fade-left";
         } else {
-          this.direction = "fade-right";
+          if (/iphone/.test(navigator.userAgent.toLowerCase())) {
+            this.direction = "";
+          } else {
+            this.direction = "fade-right";
+          }
         }
       }
     }

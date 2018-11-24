@@ -75,7 +75,8 @@
         selectUsers: [],
         selectUsersId: [],
         images: [],
-        getJs: false
+        getJs: false,
+        submitDone:fals
       };
     },
     computed: {
@@ -252,6 +253,14 @@
           Toast.fail("请选择参与督办的人员！");
           return false;
         }
+        if (that.submitDone) {
+          return false
+        }
+
+        Toast.loading({
+          mask: true,
+          message: '加载中...'
+        });
 
         let post = {
           startTime: moment(that.startDate).format("YYYY-MM-DD HH:mm:ss"),
@@ -264,6 +273,7 @@
 
         that.$http.post("/api/WorkNotify/Post", post).then(() => {
           Toast.success('发布成功！')
+          that.submitDone = true
           setTimeout(() => {
             that.$router.replace('/supervise/myrelease')
           }, 2000);

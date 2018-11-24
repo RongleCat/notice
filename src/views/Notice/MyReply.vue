@@ -1,60 +1,72 @@
 <template>
   <div class="page" fabu>
-    <div class="item" @click="$router.push('/notice/replydetail/100')">
-      <van-panel title="国贸集团举办海关政策解读及通关规范讲座">
-        <div class="item-content">
-          2018-10-20 至 2018-10-28
-          <div class="state-label end">已完成</div>
-        </div>
-      </van-panel>
-    </div>
-    <div class="item" @click="$router.push('/notice/replydetail/100')">
-      <van-panel title="国贸集团举办海关政策解读及通关规范讲座">
-        <div class="item-content">
-          2018-10-20 至 2018-10-28
-          <div class="state-label end">已完成</div>
-        </div>
-      </van-panel>
-    </div>
-    <div class="item" @click="$router.push('/notice/replydetail/100')">
-      <van-panel title="国贸集团举办海关政策解读及通关规范讲座">
-        <div class="item-content">
-          2018-10-20 至 2018-10-28
-          <div class="state-label">未完成</div>
-        </div>
-      </van-panel>
-    </div>
-    <div class="item" @click="$router.push('/notice/replydetail/100')">
-      <van-panel title="国贸集团举办海关政策解读及通关规范讲座">
-        <div class="item-content">
-          2018-10-20 至 2018-10-28
-          <div class="state-label end">已完成</div>
-        </div>
-      </van-panel>
-    </div>
-    <div class="item" @click="$router.push('/notice/replydetail/100')">
-      <van-panel title="国贸集团举办海关政策解读及通关规范讲座">
-        <div class="item-content">
-          2018-10-20 至 2018-10-28
-          <div class="state-label end">已完成</div>
-        </div>
-      </van-panel>
-    </div>
-    <div class="item" @click="$router.push('/notice/replydetail/100')">
-      <van-panel title="国贸集团举办海关政策解读及通关规范讲座">
-        <div class="item-content">
-          2018-10-20 至 2018-10-28
-          <div class="state-label end">已完成</div>
-        </div>
-      </van-panel>
-    </div>
+    <van-list v-model="loading" :finished="finished" @load="onLoad">
+      <div class="item" @click="$router.push('/notice/releasedetail/'+i.Id+'?type=1&state='+i.state)" v-for="(i,index) in list"
+        :key="index">
+        <van-panel :title="i.title">
+          <div class="item-content">
+            {{i.startTime | getTime | fTime('YYYY-MM-DD HH:mm')}} 至 {{i.endTime | getTime | fTime('YYYY-MM-DD HH:mm')}}
+            <div class="state-label" :class="[stateItem(i.state).className]">{{stateItem(i.state).text}}</div>
+          </div>
+        </van-panel>
+      </div>
+    </van-list>
+    <div class="no-data-list" v-if="!list.length">暂无数据</div>
   </div>
 </template>
 
 <script>
   export default {
+    data() {
+      return {
+        page: 0,
+        loading: false,
+        finished: true,
+        list: [],
+        listCount: 0
+      }
+    },
     beforeCreate() {
-      document.title = '我的会议'
+      document.title = '我收到的会议通知'
+    },
+    mounted() {
+      let that = this
+      that.getListData()
+    },
+    methods: {
+      onLoad() {
+        if (!this.finished) {
+          this.page += 1
+          this.getListData()
+        }
+      },
+      getListData() {
+        let that = this
+        that.$http.get('/api/Meeting/MyReceived', {
+          params: {
+            page: that.page
+          }
+        }).then(r => {
+          if (r) {
+            that.listCount = r.total
+            that.list = [...that.list, ...r.data]
+            that.loading = false;
+            if (that.page === 0) {
+              that.finished = false
+            }
+            if (that.list.length >= that.listCount) {
+              that.finished = true;
+            }
+            console.log(r);
+          }
+        })
+      },
+      stateItem(state) {
+        return {
+          className: state != 0 ? 'end' : '',
+          text: state == 0 ? '未签到' : state == 1 ? '已签到' : '已关闭'
+        }
+      }
     }
   }
 </script>

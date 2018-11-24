@@ -75,7 +75,8 @@
         selectUsers: [],
         selectUsersId: [],
         images: [],
-        getJs: false
+        getJs: false,
+        submitDone: false
       };
     },
     computed: {
@@ -252,6 +253,15 @@
           return false;
         }
 
+        if (that.submitDone) {
+          return false
+        }
+
+        Toast.loading({
+          mask: true,
+          message: '加载中...'
+        });
+
         let post = {
           startTime: moment(that.startDate).format("YYYY-MM-DD HH:mm:ss"),
           endTime: moment(that.endDate).format("YYYY-MM-DD HH:mm:ss"),
@@ -262,6 +272,7 @@
         };
 
         that.$http.post("/api/Meeting/Post", post).then(() => {
+          that.submitDone = true
           Toast.success('发布成功！')
           setTimeout(() => {
             that.$router.replace('/notice/myrelease')

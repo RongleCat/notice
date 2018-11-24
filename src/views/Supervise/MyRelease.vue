@@ -1,7 +1,8 @@
 <template>
   <div class="page" fabu>
     <van-list v-model="loading" :finished="finished" @load="onLoad">
-      <div class="item" @click="$router.push('/supervise/releasedetail/'+i.Id+'?state='+i.State)" v-for="(i,index) in list" :key="index">
+      <div class="item" @click="$router.push('/supervise/releasedetail/'+i.Id+'?state='+i.State)" v-for="(i,index) in list"
+        :key="index">
         <van-panel :title="i.Title">
           <div class="item-content">
             {{i.StartTime | getTime | fTime('YYYY-MM-DD HH:mm')}} 至 {{i.EndTime | getTime | fTime('YYYY-MM-DD HH:mm')}}
@@ -10,6 +11,7 @@
         </van-panel>
       </div>
     </van-list>
+    <div class="no-data-list" v-if="!list.length">暂无数据</div>
   </div>
 </template>
 

@@ -32,7 +32,7 @@
         <van-cell title="开始时间" :value="pageData.startTime|getTime|fTime('YYYY-MM-DD HH:mm')" />
         <van-cell title="结束时间" :value="pageData.endTime|getTime|fTime('YYYY-MM-DD HH:mm')" />
       </van-cell-group>
-      <van-cell-group>
+      <van-cell-group v-if="!type">
         <van-cell>
           <template slot="title">
             已签到人员
@@ -46,7 +46,7 @@
           </div>
         </van-cell>
       </van-cell-group>
-      <van-cell-group>
+      <van-cell-group v-if="!type">
         <van-cell>
           <template slot="title">
             未签到人员
@@ -67,7 +67,7 @@
       </van-cell-group>
 
       <div class="bottom-btn">
-        <van-button size="large" @click="$router.go(-1)" v-if="state || type">返回</van-button>
+        <van-button size="large" @click="backEvent" v-if="state || type">返回</van-button>
         <van-button size="large" v-else @click="closeMeeting">关闭会议</van-button>
       </div>
 
@@ -84,6 +84,9 @@
 </template>
 
 <script>
+  import {
+    Toast
+  } from "vant";
   export default {
     data() {
       return {
@@ -138,8 +141,11 @@
       type() {
         return parseInt(this.$route.query.type)
       },
+      form() {
+        return parseInt(this.$route.query.form)
+      },
       images() {
-        if (this.pageData) {
+        if (this.pageData && this.pageData.attachment) {
           return this.pageData.attachment.split('|')
         } else {
           return []
@@ -159,11 +165,19 @@
         that.$http.post('/api/Meeting/Close', {
           id: that.id
         }).then(() => {
+
           Toast.success('关闭会议成功！')
           setTimeout(() => {
             that.$router.replace('/notice/myrelease')
           }, 2000);
         })
+      },
+      backEvent() {
+        if (this.form) {
+          window.WeixinJSBridge.call('closeWindow');
+        } else {
+          this.$router.go(-1)
+        }
       }
     },
     beforeCreate() {

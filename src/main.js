@@ -29,7 +29,7 @@ axios.interceptors.response.use(function (res) {
         appid = '1000016'
         api = 'meeting'
       }
-      window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wwb380417e702d20f6&redirect_uri=http%3a%2f%2fwibgchina.cnvp.com.cn%2fapi%2f${api}%2flogin&response_type=code&scope=snsapi_userinfo&agentid=${appid}&state=${url}#wechat_redirect`
+      window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wwb380417e702d20f6&redirect_uri=http%3a%2f%2fwibgchina.cnvp.com.cn%2fapi%2f${api}%2flogin&response_type=code&scope=snsapi_userinfo&agentid=${appid}&state=${url}&connect_redirect=1#wechat_redirect`
     }
     return res.data.Data
   } else {

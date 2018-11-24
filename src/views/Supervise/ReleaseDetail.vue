@@ -92,7 +92,7 @@
         return parseInt(this.$route.query.state)
       },
       images() {
-        if (this.pageData) {
+        if (this.pageData && this.pageData.attachment) {
           return this.pageData.attachment.split('|')
         } else {
           return []

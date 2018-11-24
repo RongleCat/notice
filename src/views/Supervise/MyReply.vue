@@ -10,6 +10,7 @@
         </van-panel>
       </div>
     </van-list>
+    <div class="no-data-list" v-if="!list.length">暂无数据</div>
   </div>
 </template>
 
