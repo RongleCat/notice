@@ -76,7 +76,7 @@
         selectUsersId: [],
         images: [],
         getJs: false,
-        submitDone:fals
+        submitDone: false
       };
     },
     computed: {

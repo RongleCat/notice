@@ -27,7 +27,7 @@
       }
     },
     beforeCreate() {
-      document.title = '我的发布'
+      document.title = '我发布的督办'
     },
     mounted() {
       let that = this

@@ -27,7 +27,7 @@
       }
     },
     beforeCreate() {
-      document.title = '我发布的会议'
+      document.title = '我发布的会议通知'
     },
     mounted() {
       let that = this

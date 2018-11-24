@@ -139,7 +139,6 @@
             that.$http.get(url, {
               params
             }).then(r => {
-              console.log(r)
               if (r) {
                 that.pd = r
                 that.getJs = true

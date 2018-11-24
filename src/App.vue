@@ -12,8 +12,8 @@
 <script>
   // import TheTabber from "@/components/TheTabber.vue";
   let allRouter = [
-    "noticeReplyDetail",
     "noticeReleaseDetail",
+    "noticeReplyDetail",
     "noticeCreateRelease",
     "noticeMyReply",
     "noticeMyRelease",
